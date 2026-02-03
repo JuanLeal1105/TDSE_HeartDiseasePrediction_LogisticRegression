@@ -1,9 +1,9 @@
-# TDSE_HeartDiseasePrediction_LogisticRegression
+# **TDSE_HeartDiseasePrediction_LogisticRegression**
 
 **Created by**
 Juan Carlos Leal Cruz 
 
-## Laboratory Description
+## **Laboratory Description**
 The following laboratory applies logistic regression to predict heart disease risk using the UCI Heart Disease Dataset, which contains 303 patient records with 14 clinical features. The objective is to classify the presence or absence of heart disease by implementing logistic regression from scratch using NumPy, including the sigmoid function, cost computation, and gradient descent. The lab emphasizes model interpretation through parameter tuning, decision boundary visualization, regularization, and concludes with a brief exploration of deployment concepts using Amazon SageMaker.
 
 ### Prerequisites
@@ -36,44 +36,101 @@ To run this laboratory, follow the steps below:
 3. Start running each block of code so you can see the results
 ___
 
-### Laboratory Summary
+### **Laboratory Summary**
 - Load and explore the dataset (EDA, preprocessing, train/test split, normalization).  
 - Implement logistic regression from scratch (sigmoid, cost, gradient descent).  
 - Visualize decision boundaries for selected feature pairs.  
 - Apply L2 regularization and tune λ.  
 - Deploy trained model on Amazon SageMaker for real-time inference.
 
-### Dataset Description
+### **Dataset Description**
 - **Source:** [Kaggle Heart Disease Dataset](https://www.kaggle.com/datasets/neurocipher/heartdisease)  
 - **Size:** 271 patients  
 - **Features:** Age (29–77), Cholesterol (112–564 mg/dL), Resting BP, Max HR, ST Depression, Vessels, and others  
 - **Target:** Heart disease presence (~55% positive)  
 - **Notes:** Binarized target (1 = disease, 0 = no disease). Selected ≥6 features for modeling (Age, Cholesterol, BP, Max HR, ST Depression, Vessels).
 
----
-
-### Laboratory Steps
+## **Laboratory Steps**
 
 This project is divided into five distinct steps, moving from data preparation to cloud deployment.
 
-#### Step 1: Load and Prepare the Dataset
+### Step 1: Load and Prepare the Dataset
 * **Data Acquisition:** Downloaded `heart.csv` from Kaggle.
 * **Preprocessing:** Binarized the target column (1=disease, 0=absence), performed a stratified 70/30 train/test split, and normalized numerical features.
 * **Exploratory Data Analysis (EDA):** Summarized statistics, handled outliers, and visualized class distributions.
 
-#### Step 2: Implement Basic Logistic Regression
+### Step 2: Implement Basic Logistic Regression
 * **Core Functions:** Implemented `sigmoid`, `cost_function` (binary cross-entropy), and `gradient_descent` using NumPy.
 * **Training:** Trained the model on the full training set ($\alpha \approx 0.01$, 1000+ iterations).
 * **Evaluation:** Calculated Accuracy, Precision, Recall, and F1 scores on both training and test sets.
 
-#### Step 3: Visualize Decision Boundaries
+### Step 3: Visualize Decision Boundaries
 * **Feature Selection:** Selected specific feature pairs (e.g., Age vs. Cholesterol, BP vs. Max HR).
 * **Visualization:** Sub-setted data to 2D, trained specific models for these pairs, and plotted the decision boundary lines against scatter plots of true labels to analyze separability.
 
-#### Step 4: Regularization (L2)
+### Step 4: Regularization (L2)
 * **Implementation:** Added L2 Regularization to the cost function and gradient updates to prevent overfitting.
 * **Tuning:** Tuned the regularization parameter $\lambda$ (values: `[0, 0.001, 0.01, 0.1, 1]`).
 * **Analysis:** Compared decision boundaries and metrics between un-regularized and regularized models.
 
-#### Step 5: Deployment Evidence (Amazon SageMaker)
-The final model was exported and deployed to an endpoint using Amazon SageMaker.
+
+## **Deployment Locally**
+The final model with all the six features was exproted into a JSON format in order to be used in our API. Just to clarify, due to certain limitations in SageMaker I was unable to deploy in the domain that was created. however, I decided to create a local deployment in order to test the model. Here is a list of the files used and what they are used for:
+- **api.py**  
+  Implements a local REST API using Flask.  
+  It loads the trained logistic regression model parameters and scaling information from a single JSON file, normalizes incoming feature vectors, computes predictions, and exposes the `/predict` endpoint.
+
+- **heart_disease_model.json**  
+  Contains all exported artifacts from training in one place.
+
+- **client_test.py**  
+  Acts as a local client for testing the API.  It defines multiple example patients, sends their feature vectors to the `/predict` endpoint, and prints the predicted risk probability and corresponding risk level.
+
+
+### **Deployment Overview**
+The model was trained using 6 numerical features:
+- Age  
+- Resting Blood Pressure  
+- Cholesterol  
+- Maximum Heart Rate  
+- ST Depression  
+- Number of vessels (fluoroscopy)
+
+After the training, all the learned parameters such as `weights`and `bias` were exported to a JSON format file to ensure the protability and readability. The file's name is `heart_disease_model.json` and it also contains all the normalization statistics that were calculated like `mean` and `standard deviation`. 
+
+**The API**
+
+In order to test an endopoint, a Flask API was implemented so that we could:
+- Load the model parameters at startup
+- Normalize incoming data using the stored statistics
+- Return a prediction probability and a human-readable risk level
+
+**The Test**
+
+As well as we could create the API, there needed to be a way to test the endpoint, so, a separate client script was created to simulate multiple patients and send prediction requests to the API.
+
+**Running the API Locally**
+
+First of all, all the right dependencies must be installes, so in order to do so execute the following comands:
+```
+python -m pip install flask numpy requests
+python3 -m pip install flask numpy requests  #Some machines use python3
+```
+
+After doing so, in order to run the deployment, follow the next steps:
+1. Starting the API
+   ```
+   python api.py
+   ```
+   You might as well use `python3`if needed depending on your computer
+   
+2. Using the endpoint and testing
+   ```
+   python client_test.py
+   ```
+   You might as well use `python3`if needed depending on your computer
+
+## **Deployment Evidence**
+Here's the evidence that indeed the api is working in a local evironment:
+
+
