@@ -124,7 +124,7 @@ After doing so, in order to run the deployment, follow the next steps:
    ```
    You might as well use `python3`if needed depending on your computer
    
-2. Using the endpoint and testing
+2. Using the endpoint and testing.  Open a new terminal and run the following command:
    ```
    python client_test.py
    ```
@@ -133,4 +133,17 @@ After doing so, in order to run the deployment, follow the next steps:
 ## **Deployment Evidence**
 Here's the evidence that indeed the api is working in a local evironment:
 
+**Screenshot #1**
+![alt text](Images/ApiEvidence.png)
 
+In the previous image, we can see that the API is correctly running in a local evironment, meaning that is ready to be tested. 
+
+**Screenshot #2**
+![alt text](Images/Results.png)
+
+Here are the results that were obtained after using the predict endpoint that was created.
+
+**Screenshot #3**
+![alt text](Images/Requests.png)
+
+Returning to the terminal in which the API is running we can see that all three requests were processed and in case we wish to test the API a bit more, leave it running and create some more `test.py` files so that the predict endpoint is used.
